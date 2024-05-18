@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+  <body>
+    <h2>Login</h2>
+    <form method="post">
+      {% csrf_token %} {{ form.non_field_errors }}
+      <!-- Display non-field errors -->
+      <div>
+        {{ form.username.label_tag }} {{ form.username }} {{
+        form.username.errors }}
+        <!-- Display username errors -->
+      </div>
+      <div>
+        {{ form.password.label_tag }} {{ form.password }} {{
+        form.password.errors }}
+        <!-- Display password errors -->
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </body>
+</html>
