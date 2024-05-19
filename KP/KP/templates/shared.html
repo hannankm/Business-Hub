@@ -1,0 +1,70 @@
+<!-- templates/shared.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shared Posts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: white;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Shared Posts</h2>
+    <ul>
+        {% for share in shared_posts %}
+            <li>
+                <p>Title: <a href="{% url 'view_post_detail' share.post.pk %}">{{ share.post.title }}</a></p>
+                <p>Content: {{ share.post.content|slice:":200" }}...</p>
+                <p>Shared at: {{ share.shared_at }}</p>
+                <form method="get" action="{% url 'delete_shared_post' share.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
