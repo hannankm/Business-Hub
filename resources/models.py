@@ -23,7 +23,6 @@ class Article(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-
     def update_like_count(self):
         self.like_count = self.likes.count()
         self.save()
@@ -50,3 +49,54 @@ class Comment(models.Model):
         return f"Comment by {self.user} on {self.article.title}"
 
 
+class Document(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    file = models.FileField(upload_to='documents/')
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    download_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+    
+    def increment_download_count(self):
+        self.download_count += 1
+        self.save()
+
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+class Media(models.Model):
+    MEDIA_TYPES = [
+        ('image', 'Image'),
+        ('video', 'Video'),
+        ('audio', 'Audio'),
+    ]
+
+    title = models.CharField(max_length=255)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    media_type = models.CharField(max_length=5, choices=MEDIA_TYPES)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    file = models.FileField(upload_to='media/')
+    download_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def increment_download_count(self):
+        self.download_count += 1
+        self.save()
+
+
+
+# document 
