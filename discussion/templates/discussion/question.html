@@ -1,0 +1,106 @@
+<!-- on Q click details page -->
+{% extends 'accounts/layout.html' %} {% load static %} {% block title %} Home -
+My Site {%endblock%} {% block content %}
+<div>
+  <h3>Question</h3>
+  <p>Author - name, username, profile</p>
+  <p>date</p>
+  <div>
+    <h4>Responses</h4>
+    <div>
+      clickable to user's profile username profile pic
+      <p>Response</p>
+      <p>Date</p>
+    </div>
+  </div>
+  <form>
+    <input type="text" />
+    <button>Reply</button>
+  </form>
+</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ question.title }}</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1>{{ question.title }}</h1>
+      <p>{{ question.content }}</p>
+      <p>
+        Views: {{ question.views_count }} | Replies: {{ question.replies_count
+        }}
+      </p>
+
+      <h2>Responses</h2>
+      {% for response in page_obj %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>{{ response.content }}</p>
+          <p class="text-muted">
+            {% load humanize %} By {{ response.user.username }} on {{
+            response.date|naturaltime }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <nav>
+          <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">First</a>
+            </li>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ page_obj.previous_page_number }}"
+                >Previous</a
+              >
+            </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+              <span class="page-link"
+                >Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages
+                }}</span
+              >
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}"
+                >Next</a
+              >
+            </li>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ page_obj.paginator.num_pages }}"
+                >Last</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+
+      <h2>Post a Response</h2>
+      <form method="post" action="{% url 'create_response' question.id %}">
+        {% csrf_token %} {{ response_form.as_p }}
+        <button type="submit" class="btn btn-primary">Post Response</button>
+      </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
+{% endblock %}
