@@ -1,3 +1,5 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block title %} Home -
+Profile {%endblock%} {% block content %}
 <h1>{{user.username}}</h1>
 <h2>{{user.first_name}} {{user.last_name}}</h1>
     <p>{{user.email}}</p>
@@ -9,4 +11,15 @@
     {% endif %}
     <p>{{user.headline}}</p>
     <p>{{user.phone_number}}</p>
+    {% load humanize %}
+
+    {% if user.date_joined|date:"Y-m-d" == today|date:"Y-m-d" %}
+        {{ user.date_joined|naturaltime }}
+    {% else %}
+        {{ user.date_joined|naturalday }}
+    {% endif %}
+    <!-- if user's profile -->
     <!-- pro pic,  -->
+    <button><a href="{% url 'edit_profile' %}">Edit Profile</a></button>
+
+    {% endblock %}

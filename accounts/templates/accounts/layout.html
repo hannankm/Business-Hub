@@ -11,11 +11,29 @@
       src="https://kit.fontawesome.com/4f47f95bfd.js"
       crossorigin="anonymous"
     ></script>
+    <style>
+      .sidebar {
+        position: sticky;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        height: 100vh; /* Full viewport height */
+        overflow-y: hidden; /* Disable vertical scrolling */
+      }
+
+      .content {
+        top: 0;
+        bottom: 0;
+        right: 0;
+      }
+    </style>
   </head>
   <body>
+    {% load humanize %}
+
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark sidebar">
           <div
             class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100"
           >
@@ -31,7 +49,7 @@
               id="menu"
             >
               <li class="nav-item">
-                <a href="#" class="nav-link align-middle px-0">
+                <a href="{% url 'home' %}" class="nav-link align-middle px-0">
                   <i class="fa-solid fa-house"></i>
                   <span class="ms-1 d-none d-sm-inline">Home Feed</span>
                 </a>
@@ -63,11 +81,23 @@
                 </ul> -->
               </li>
               <li>
-                <a href="#" class="nav-link px-0 align-middle">
+                <a
+                  href="{% url 'discussion_forum' %}"
+                  class="nav-link px-0 align-middle"
+                >
                   <i class="fa-solid fa-comments"></i>
                   <span class="ms-1 d-none d-sm-inline"
                     >Discussion Forum</span
                   ></a
+                >
+              </li>
+              <li>
+                <a
+                  href="{% url 'discussion_forum' %}"
+                  class="nav-link px-0 align-middle"
+                >
+                  <i class="fa-solid fa-comments"></i>
+                  <span class="ms-1 d-none d-sm-inline">AI Chatbot </span></a
                 >
               </li>
               <li>
@@ -136,13 +166,16 @@
                 </ul>
               </li>
               <li>
-                <a href="#" class="nav-link px-0 align-middle">
+                <a href="{% url 'home' %}" class="nav-link px-0 align-middle">
                   <i class="fa-solid fa-user-group"></i>
                   <span class="ms-1 d-none d-sm-inline">Groups</span>
                 </a>
               </li>
               <li>
-                <a href="#" class="nav-link px-0 align-middle">
+                <a
+                  href="{% url 'profile' %}"
+                  class="nav-link px-0 align-middle"
+                >
                   <i class="fa-solid fa-user"></i>
                   <span class="ms-1 d-none d-sm-inline">Profile</span>
                 </a>
@@ -157,7 +190,7 @@
             <hr />
           </div>
         </div>
-        <div class="col py-3">{% block content %} {% endblock %}</div>
+        <div class="col py-3 content">{% block content %} {% endblock %}</div>
       </div>
     </div>
 

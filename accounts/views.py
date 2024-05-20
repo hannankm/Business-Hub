@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, ProfileForm, CustomUserChangeForm
 from django.contrib.auth.decorators import login_required
 from . import models
+from django.utils import timezone
+
 
 
 
@@ -40,6 +42,7 @@ def unfollow(requests):
 
 @login_required
 def profile(request):
+    today = timezone.now()
     user = request.user
     profile, created = models.Profile.objects.get_or_create(user=user)
     userInfo = models.CustomUser.objects.get(username=user)
@@ -47,7 +50,8 @@ def profile(request):
     # followers, following 
     return render(request, 'accounts/profile.html', {
         'profile': profile,
-        'user': userInfo
+        'user': userInfo,
+        'today': today
     })
 
 @login_required

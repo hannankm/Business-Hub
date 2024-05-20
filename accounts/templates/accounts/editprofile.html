@@ -1,15 +1,9 @@
 <!-- templates/accounts/edit_profile.html -->
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Edit Profile</title>
-  </head>
-  <body>
-    <h2>Edit Profile</h2>
-    <form method="post">
-      {% csrf_token %} {{ user_form.as_p }} {{ profile_form.as_p }}
-      <button type="submit">Save changes</button>
-    </form>
-  </body>
-</html>
+{% extends 'accounts/layout.html' %} {% load static %} {% block title %} Edit
+Profile {%endblock%} {% block content %}
+<h2>Edit Profile</h2>
+<form method="post">
+  {% csrf_token %} {{ user_form.as_p }} {{ profile_form.as_p }}
+  <button type="submit">Save changes</button>
+</form>
+{% endblock %}
