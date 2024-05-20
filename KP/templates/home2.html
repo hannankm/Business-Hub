@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Home</h1>
+    <ul>
+        {% for post in object_list %}
+            <li>
+                <h2>{{ post.posted_by.username }}</h2>
+                <p>{{ post.text_content }}</p>
+                <p>Posted on: {{ post.created_at }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
