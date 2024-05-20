@@ -1,3 +1,4 @@
+{% load static %}
 <html>
   <head>
     <title>{% block title %} {% endblock%}</title>
@@ -7,10 +8,13 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
     <script
       src="https://kit.fontawesome.com/4f47f95bfd.js"
       crossorigin="anonymous"
     ></script>
+
     <style>
       .sidebar {
         position: sticky;

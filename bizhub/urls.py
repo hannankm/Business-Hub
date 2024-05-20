@@ -25,6 +25,9 @@ urlpatterns = [
     path('', views.home, name="home"),
     path("accounts/", include("accounts.urls")),
     path("discussion_forum/", include("discussion.urls")),
+    path("resources/", include("resources.urls")),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+
 
 
 ]
