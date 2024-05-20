@@ -1,0 +1,50 @@
+{% extends 'accounts/layout.html' %}
+{% block content %}
+<div class="container">
+    <h2>Document List</h2>
+    <button><a href="{% url 'upload_document'  %}">Upload Document</a></button>
+
+    <form method="GET" action="" class="form-inline mb-3">
+        <input type="text" name="search" value="{{ search_query }}" class="form-control mr-sm-2" placeholder="Search documents">
+        <select name="sort" id="sortOptions" class="form-control mr-sm-2">
+            <option value="latest" {% if sort_option == 'latest' %}selected{% endif %}>Most Recent</option>
+            <option value="earliest" {% if sort_option == 'earliest' %}selected{% endif %}>Earliest</option>
+            <option value="most_downloaded" {% if sort_option == 'most_downloaded' %}selected{% endif %}>Most Downloaded</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <div class="row">
+        {% for document in documents %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ document.title }}</h5>
+                    <p class="card-text">Uploaded by {{ document.user }}</p>
+                    <p class="card-text">Downloads: {{ document.download_count }}</p>
+                    <a href="{% url 'download_document' document.slug %}" class="btn btn-primary">Download</a>
+                    {% if user == document.user %}
+                    <a href="{% url 'update_document' document.slug %}" class="btn btn-secondary">Update</a>
+                    <form method="post" action="{% url 'delete_document' document.slug %}" style="display: inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No documents available.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.getElementById('sortOptions').addEventListener('change', function () {
+            const selectedSort = this.value;
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('sort', selectedSort);
+            window.location.href = currentUrl.toString();
+        });
+    </script>
+</div>
+{% endblock %}

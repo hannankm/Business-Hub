@@ -1,0 +1,16 @@
+{% extends 'accounts/layout.html' %} {% block content %}
+<div class="container">
+  <h2>
+    {% if form.instance.pk %}Update Document{% else %}Upload Document{% endif %}
+  </h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">
+      {% if form.instance.pk %}Update{% else %}Upload{% endif %}
+    </button>
+  </form>
+  <a href="{% url 'document_list' %}" class="btn btn-secondary mt-2"
+    >Back to documents</a
+  >
+</div>
+{% endblock %}

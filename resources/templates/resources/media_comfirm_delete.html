@@ -1,0 +1,10 @@
+{% extends 'accounts/layout.html' %}{% load static %} {% block title %} Delete
+{%endblock%}{% block content %}
+<h1>Delete Article</h1>
+<p>Are you sure you want to delete "{{ media.title }}"?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Confirm</button>
+</form>
+<a href="{% url 'media_list' %}">Cancel</a>
+{% endblock %}

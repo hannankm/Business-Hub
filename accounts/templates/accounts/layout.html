@@ -14,6 +14,9 @@
       src="https://kit.fontawesome.com/4f47f95bfd.js"
       crossorigin="anonymous"
     ></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <style>
       .sidebar {
@@ -145,19 +148,19 @@
                   data-bs-parent="#menu"
                 >
                   <li class="w-100">
-                    <a href="#" class="nav-link px-0">
+                    <a href="{% url 'article_list' %}" class="nav-link px-0">
                       <i class="fa-solid fa-newspaper"></i
                       ><span class="d-none d-sm-inline">Articles</span></a
                     >
                   </li>
                   <li>
-                    <a href="#" class="nav-link px-0">
+                    <a href="{% url 'document_list' %}" class="nav-link px-0">
                       <i class="fa-solid fa-file"></i>
                       <span class="d-none d-sm-inline">Documents</span>
                     </a>
                   </li>
                   <li>
-                    <a href="#" class="nav-link px-0">
+                    <a href="{% url 'media_list' %}" class="nav-link px-0">
                       <i class="fa-solid fa-photo-film"></i>
                       <span class="d-none d-sm-inline">Media</span></a
                     >

@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Article, Comment
+from .models import Article, Comment, Media, Document
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
@@ -16,22 +16,12 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['content']
 
-# class DocumentForm(forms.ModelForm):
-#     class Meta:
-#         model = Document
-#         fields = ['title', 'file']
+class MediaForm(forms.ModelForm):
+    class Meta:
+        model = Media
+        fields = ['title', 'media_type', 'file']
 
-# class ImageForm(forms.ModelForm):
-#     class Meta:
-#         model = Image
-#         fields = ['title', 'image']
-
-# class VideoForm(forms.ModelForm):
-#     class Meta:
-#         model = Video
-#         fields = ['title', 'video']
-
-# class LinkForm(forms.ModelForm):
-#     class Meta:
-#         model = Link
-#         fields = ['title', 'url']
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['title', 'file']

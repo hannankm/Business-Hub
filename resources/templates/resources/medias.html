@@ -1,0 +1,75 @@
+{% extends 'accounts/layout.html' %}
+{% load static %}
+{% block content %}
+  <h2>Media List</h2>
+  <button><a href="{% url 'upload_media'  %}">Upload Media</a></button>
+
+  <form method="GET" action="" class="form-inline mb-3">
+    <input type="text" name="search" value="{{ search_query }}" class="form-control mr-sm-2" placeholder="Search media">
+    <select name="sort" id="sortOptions" class="form-control mr-sm-2">
+      <option value="recent" {% if sort_option == 'recent' %}selected{% endif %}>Most Recent</option>
+      <option value="earliest" {% if sort_option == 'earliest' %}selected{% endif %}>Earliest</option>
+      <option value="most_downloaded" {% if sort_option == 'most_downloaded' %}selected{% endif %}>Most Downloaded</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  <ul class="nav nav-tabs" id="mediaTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link {% if media_type == 'image' %}active{% endif %}" href="?type=image&sort={{ sort_option }}&search={{ search_query }}">Images</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if media_type == 'video' %}active{% endif %}" href="?type=video&sort={{ sort_option }}&search={{ search_query }}">Videos</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if media_type == 'audio' %}active{% endif %}" href="?type=audio&sort={{ sort_option }}&search={{ search_query }}">Audios</a>
+    </li>
+  </ul>
+
+  <div class="row mt-3">
+    {% for media in media %}
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ media.title }}</h5>
+            {% if media.media_type == 'image' %}
+              <img src="{{ media.file.url }}" alt="{{ media.title }}" class="img-fluid">
+            {% elif media.media_type == 'video' %}
+              <video controls class="img-fluid">
+                <source src="{{ media.file.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            {% elif media.media_type == 'audio' %}
+              <audio controls >
+                <source src="{{ media.file.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+   
+            {% endif %}
+            <p class="card-text">Uploaded by {{ media.user }}</p>
+            <p class="card-text">Downloads: {{ media.download_count }}</p>
+            <a href="{% url 'download_media' media.slug %}" class="btn btn-primary">Download</a>
+            {% if user == media.user %}
+              <a href="{% url 'update_media' media.slug %}" class="btn btn-secondary">Update</a>
+              <form method="post" action="{% url 'delete_media' media.slug %}" style="display: inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No media available.</p>
+    {% endfor %}
+  </div>
+
+  <script>
+    document.getElementById('sortOptions').addEventListener('change', function() {
+      const selectedSort = this.value;
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('sort', selectedSort);
+      window.location.href = currentUrl.toString();
+    });
+  </script>
+{% endblock %}

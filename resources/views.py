@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Article, Comment, Like
-from .forms import ArticleForm, CommentForm
+from .models import Article, Comment, Like, Media, Document
+from .forms import ArticleForm, CommentForm, MediaForm, DocumentForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import JsonResponse
+from django.http import FileResponse, JsonResponse, HttpResponseForbidden
 from django.utils.safestring import mark_safe
 
 
@@ -133,3 +133,139 @@ def view_popular_articles(request):
     ).order_by('-like_count', '-comment_count')[:5]
     
     return render(request, 'resources/popular_articles.html', {'articles': popular_articles})
+
+@login_required
+def upload_media(request):
+    if request.method == 'POST':
+        form = MediaForm(request.POST, request.FILES)
+        if form.is_valid():
+            media = form.save(commit=False)
+            media.user = request.user
+            media.save()
+            return redirect('media_list', slug=media.slug)
+    else:
+        form = MediaForm()
+    return render(request, 'resources/media_form.html', {'form': form})
+
+# def media_detail(request, slug):
+#     media = get_object_or_404(Media, slug=slug)
+#     return render(request, 'resources/media_detail.html', {'media': media})
+
+
+def download_media(request, slug):
+    media = get_object_or_404(Media, slug=slug)
+    media.increment_download_count()
+    response = FileResponse(media.file.open(), as_attachment=True)
+    return response
+
+@login_required
+def update_media(request, slug):
+    media = get_object_or_404(Media, slug=slug)
+    if request.user != media.user:
+        return HttpResponseForbidden()
+    if request.method == 'POST':
+        form = MediaForm(request.POST, request.FILES, instance=media)
+        if form.is_valid():
+            form.save()
+            return redirect('resources/mdeias.html', slug=media.slug)
+    else:
+        form = MediaForm(instance=media)
+    return render(request, 'resources/media_form.html', {'form': form})
+
+@login_required
+def delete_media(request, slug):
+    media = get_object_or_404(Media, slug=slug)
+    if request.user != media.user:
+        return HttpResponseForbidden()
+    media.delete()
+    return redirect('media_list')
+
+def media_list(request):
+    sort_option = request.GET.get('sort', 'recent')  # Default sorting option
+    media_type = request.GET.get('type', 'image')  # Default media type
+    search_query = request.GET.get('search', '')
+
+    if sort_option == 'earliest':
+        order_by = 'created_at'
+    elif sort_option == 'most_downloaded':
+        order_by = '-download_count'
+    else:
+        order_by = '-created_at'
+
+    if media_type not in ['image', 'video', 'audio']:
+        media_type = 'image'
+
+    media = Media.objects.filter(
+        media_type=media_type,
+        title__icontains=search_query
+    ).order_by(order_by)
+
+    return render(request, 'resources/medias.html', {
+        'media': media,
+        'media_type': media_type,
+        'sort_option': sort_option,
+        'search_query': search_query
+    })
+
+
+@login_required
+def upload_document(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            document = form.save(commit=False)
+            document.user = request.user
+            document.save()
+            return redirect('document_list')
+    else:
+        form = DocumentForm()
+    return render(request, 'resources/document_form.html', {'form': form})
+
+@login_required
+def update_document(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES, instance=document)
+        if form.is_valid():
+            form.save()
+            return redirect('document_list')
+    else:
+        form = DocumentForm(instance=document)
+    return render(request, 'resources/document_form.html', {'form': form})
+
+@login_required
+def delete_document(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    if request.method == 'POST':
+        document.delete()
+        return redirect('document_list')
+    return render(request, 'resources/document_confirm_delete.html', {'document': document})
+
+@login_required
+def download_document(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    document.increment_download_count()
+    return redirect(document.file.url)
+
+def document_list(request):
+    sort_option = request.GET.get('sort', 'latest')
+    search_query = request.GET.get('search', '')
+
+    if sort_option == 'earliest':
+        order_by = 'uploaded_at'
+    elif sort_option == 'most_downloaded':
+        order_by = '-download_count'
+    else:
+        order_by = '-uploaded_at'
+
+    documents = Document.objects.filter(title__icontains=search_query).order_by(order_by)
+
+    paginator = Paginator(documents, 9)  # 9 documents per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'resources/documents.html', {
+        'documents': page_obj,
+        'sort_option': sort_option,
+        'search_query': search_query
+    })

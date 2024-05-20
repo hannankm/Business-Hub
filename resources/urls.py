@@ -13,5 +13,15 @@ urlpatterns = [
     path('article/<slug:slug>/like/', views.like_article, name='like_article'),
     path('liked-articles/', views.view_liked_articles, name='view_liked_articles'),
     path('popular-articles/', views.view_popular_articles, name='view_popular_articles'),
+    path('media/', views.media_list, name='media_list'),
+    path('media/upload/', views.upload_media, name='upload_media'),
+    path('media/<slug:slug>/download/', views.download_media, name='download_media'),
+    path('media/<slug:slug>/update/', views.update_media, name='update_media'),
+    path('media/<slug:slug>/delete/', views.delete_media, name='delete_media'),
+    path('documents/upload/', views.upload_document, name='upload_document'),
+    path('documents/<slug:slug>/update/', views.update_document, name='update_document'),
+    path('documents/<slug:slug>/delete/', views.delete_document, name='delete_document'),
+    path('documents/<slug:slug>/download/', views.download_document, name='download_document'),
+    path('documents/', views.document_list, name='document_list'),
 
 ]
