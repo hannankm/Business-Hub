@@ -1,0 +1,9 @@
+{% extends 'accounts/layout.html' %}{% load static %} {% block title %} Article
+{%endblock%} {% block content %}
+<h1>{% if form.instance.pk %}Edit Article{% else %}New Article{% endif %}</h1>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+<a href="{% url 'article_list' %}">Back to articles</a>
+{% endblock %}

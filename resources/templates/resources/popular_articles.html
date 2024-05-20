@@ -1,0 +1,14 @@
+{% extends 'accounts/layout.html' %}{% load static %} {% block title %} Article
+{%endblock%} {% block content %}
+<h1>Popular Articles</h1>
+<ul>
+  {% for article in articles %}
+  <li>
+    <a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a> by
+    {{ article.author }} on {{ article.created_at }}
+    <p>{{ article.like_count }} Likes, {{ article.comment_count }} Comments</p>
+  </li>
+  {% endfor %}
+</ul>
+<a href="{% url 'article_list' %}">Back to articles</a>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block title %} Article
+{%endblock%} {% block content %}
+
+<h1>{{ article.title }}</h1>
+<p>By {{ article.author }} on {{ article.created_at }}</p>
+<div>{{ article.content }}</div>
+<p id="like-count">{{ article.like_count }} Likes</p>
+,
+<p>{{ article.comment_count }} Comments</p>
+{% if user.is_authenticated %}
+<button id="like-button" data-slug="{{ article.slug }}">
+  {% if user_has_liked %}Unlike{% else %}Like{% endif %}
+</button>
+{% endif %}
+<h2>Comments</h2>
+<ul>
+  {% for comment in comments %}
+  <li>
+    {{ comment.user }}: {{ comment.content }} - {{ comment.created_at }}
+    <span
+      >{% if user == comment.user %}
+      <form method="post" action="{% url 'delete_comment' comment.pk %}">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+      </form>
+      {% endif %}</span
+    >
+  </li>
+  {% endfor %}
+</ul>
+<div>
+  <span>Page {{ comments.number }} of {{ comments.paginator.num_pages }}</span>
+  <div>
+    {% if comments.has_previous %}
+    <a href="?page=1">First</a>
+    <a href="?page={{ comments.previous_page_number }}">Previous</a>
+    {% endif %} {% if comments.has_next %}
+    <a href="?page={{ comments.next_page_number }}">Next</a>
+    <a href="?page={{ comments.paginator.num_pages }}">Last</a>
+    {% endif %}
+  </div>
+</div>
+{% if user.is_authenticated %}
+<h3>Add a comment:</h3>
+<form method="post" action="{% url 'add_comment' article.slug %}">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+{% endif %}
+<a href="{% url 'article_list' %}">Back to articles</a>
+
+<script>
+  document.getElementById("like-button").addEventListener("click", function () {
+    const slug = this.dataset.slug;
+    fetch(`/resources/article/${slug}/like/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({}),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "liked") {
+          this.textContent = "Unlike";
+        } else {
+          this.textContent = "Like";
+        }
+        document.getElementById(
+          "like-count"
+        ).textContent = `${data.like_count} Likes`;
+      });
+  });
+</script>
+{% endblock %}
