@@ -1,0 +1,77 @@
+{% extends 'accounts/layout.html' %}
+{% block content %}
+<!-- groups i am member in or created -->
+<!-- my groups -->
+<h2>Group List</h2>
+
+<form method="GET" action="" class="form-inline mb-3">
+  <input type="text" name="search" value="{{ search_query }}" class="form-control mr-sm-2" placeholder="Search groups">
+  <select name="sort" id="sortOptions" class="form-control mr-sm-2">
+    <option value="popular" {% if sort_option == 'popular' %}selected{% endif %}>Most Popular</option>
+    <option value="recent" {% if sort_option == 'recent' %}selected{% endif %}>Most Recent</option>
+    <option value="earliest" {% if sort_option == 'earliest' %}selected{% endif %}>Earliest</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<div class="row">
+  {% for group in page_obj %}
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      <div class="card-body">
+        {% if group.logo %}
+        <!-- Display logo as a small rounded image -->
+        <img src="{{ group.logo.url }}" alt="{{ group.name }}" class="card-img-top rounded-circle" style="width: 50px;">
+        {% else %}
+        <!-- Display Font Awesome icon with rounded background -->
+        <div class="rounded-circle text-center" style="width: 50px; height: 50px; background-color: black;">
+          <i class="fas fa-user-group" style="font-size: 24px; color: white; margin-top: 13px;"></i>
+        </div>
+        {% endif %}
+        <!-- Display group name with Bootstrap rounded style -->
+        <h5 class="card-title rounded">{{ group.name }}</h5>
+        <!-- Truncated description -->
+        <p class="card-text">{{ group.description|truncatewords:20 }}</p>
+        <!-- Display group owner's username with clickable link to profile -->
+        <p class="card-text">Owner: <a href="{% url 'profile' group.owner.username %}">{{ group.owner.username }}</a></p>
+        <!-- Display member count -->
+        <p class="card-text">Members: {{ group.members.count }}</p>
+        <!-- View more button -->
+        <a href="{% url 'group_detail' group.slug %}" class="btn btn-primary">View More</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p>No groups available.</p>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo; first</a>
+    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+
+<!-- JavaScript to update URL when sorting option changes -->
+<script>
+  document.getElementById('sortOptions').addEventListener('change', function() {
+    const selectedSort = this.value;
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('sort', selectedSort);
+    window.location.href = currentUrl.toString();
+  });
+</script>
+{% endblock %}

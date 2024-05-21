@@ -4,23 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
   </head>
   <body>
-    <h2>Login</h2>
-    <form method="post">
-      {% csrf_token %} {{ form.non_field_errors }}
-      <!-- Display non-field errors -->
-      <div>
-        {{ form.username.label_tag }} {{ form.username }} {{
-        form.username.errors }}
-        <!-- Display username errors -->
+    <div
+      class="container d-flex justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Login</h2>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              {{ form.username.label_tag }} {{ form.username }}
+            </div>
+            <div class="form-group">
+              {{ form.password.label_tag }} {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+        </div>
       </div>
-      <div>
-        {{ form.password.label_tag }} {{ form.password }} {{
-        form.password.errors }}
-        <!-- Display password errors -->
-      </div>
-      <button type="submit">Login</button>
-    </form>
+    </div>
   </body>
 </html>

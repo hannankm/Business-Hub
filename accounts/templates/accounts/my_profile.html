@@ -1,0 +1,210 @@
+<!-- profile.html -->
+
+{% extends 'accounts/layout.html' %} {% block content %}
+
+<!-- First Row -->
+<div class="row my-4">
+  <div class="col-md-2">
+    <div id="pro-pic">
+      {% if user.profile_pic %}
+      <img
+        src="{{ user.profile_pic.url }}"
+        alt="Profile Picture"
+        class="img-fluid mx-auto"
+      />
+      {% else %}
+      <div class="p-4 mx-auto">
+        <i class="fas fa-user-circle fa-5x mx"></i>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-10">
+    <div id="basic-details">
+      <h2>{{ user.get_full_name }}</h2>
+      <p>@{{ user.username }}</p>
+      <p>{{ user.headline }}</p>
+      <div class="row w-50 w-md-100">
+        <div class="col">
+          <p>{{ user.post_count }} Posts</p>
+        </div>
+        <div class="col">
+          <p>{{ user.following_count }} Following</p>
+        </div>
+        <div class="col">
+          <p>{{ user.follower_count }} Followers</p>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary">
+        <a
+          href="{% url 'edit_profile' %}"
+          class="text-decoration-none text-white"
+          ><i class="fas fa-edit"></i>Edit Profile</a
+        >
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        data-toggle="modal"
+        data-target="#confirmDeleteModal"
+      >
+        <i class="fa fa-trash" aria-hidden="true"></i> Delete Account
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a
+      class="nav-link active"
+      id="about-tab"
+      data-toggle="tab"
+      href="#about"
+      role="tab"
+      aria-controls="about"
+      aria-selected="true"
+      >About</a
+    >
+  </li>
+  <li class="nav-item">
+    <a
+      class="nav-link"
+      id="timeline-tab"
+      data-toggle="tab"
+      href="#timeline"
+      role="tab"
+      aria-controls="timeline"
+      aria-selected="false"
+      >Timeline</a
+    >
+  </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content" id="myTabContent">
+  <div
+    class="tab-pane fade show active"
+    id="about"
+    role="tabpanel"
+    aria-labelledby="about-tab"
+  >
+    <!-- Second Row -->
+    <div class="row mt-4">
+      <div class="col">
+        <div id="work">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Position:</td>
+                <td>{{ user.profile.position|default:"N/A" }}</td>
+              </tr>
+              <tr>
+                <td>Company:</td>
+                <td>{{ user.profile.company|default:"N/A" }}</td>
+              </tr>
+              <tr>
+                <td>Education Level:</td>
+                <td>{{ user.profile.education_level|default:"N/A" }}</td>
+              </tr>
+              <tr>
+                <td>Education Field:</td>
+                <td>{{ user.profile.education_field|default:"N/A" }}</td>
+              </tr>
+              <tr>
+                <td>Experience Level:</td>
+                <td>{{ user.profile.experience_level|default:"N/A" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <div id="contact">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Gender:</td>
+                {% if profile.gender is None %}
+                <td>N/A</td>
+                {% elif profile.gender == 0 %}
+                <td>Male</td>
+                {% elif profile.gender == 1 %}
+                <td>Female</td>
+                {% endif %}
+              </tr>
+              <tr>
+                <td>Bio:</td>
+                <td>{{ profile.bio|default:"N/A" }}</td>
+              </tr>
+              <tr>
+                <td>Phone Number:</td>
+                <td>{{ user.phone_number|default:"N/A" }}</td>
+              </tr>
+              <tr>
+                <td>Email:</td>
+                <td>{{ user.email }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="tab-pane fade"
+    id="timeline"
+    role="tabpanel"
+    aria-labelledby="timeline-tab"
+  >
+    <p>This is user's timeline.</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="confirmDeleteModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="confirmDeleteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteModalLabel">
+          Confirm Deletion
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete your account? This action cannot be
+        undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <form action="{% url 'delete_account' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<!-- if user's profile -->
+<!-- pro pic,  -->

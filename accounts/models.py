@@ -1,10 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-class Industry(models.Model):
-    name = models.CharField(max_length=50, blank=False, null=False)
-    created = models.DateTimeField(auto_now_add=True)
-    # automobile, delivery, 
 
 
 class Photo(models.Model):
@@ -31,7 +27,6 @@ class CustomUser(AbstractUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    industry_iterests = models.ManyToManyField(Industry, related_name="users")
     # managing director 
     position = models.CharField(max_length=70,blank=True, null=True)
     gender = models.CharField(max_length=1, null=True, blank=True)
@@ -49,7 +44,6 @@ class Profile(models.Model):
 class Organization_Details(models.Model):
     organization = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=18, blank=True, null=True)
-    industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name="orgs", null=True)
     # year started ``
     start_date = models.DateField(blank=True, null=True)
     # location = models.CharField(max)

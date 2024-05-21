@@ -1,12 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, ProfileForm, CustomUserChangeForm
 from django.contrib.auth.decorators import login_required
 from . import models
 from django.utils import timezone
-
-
+from django.contrib.auth.forms import AuthenticationForm
 
 
 def register(request):
@@ -20,6 +18,10 @@ def register(request):
             user.bio = form.cleaned_data.get('bio')
             user.headline = form.cleaned_data.get('headline')
             user.save()
+
+            # Create a profile object for the user
+            models.Profile.objects.create(user=user)
+
             login(request, user)
             return redirect('home')  # Redirect to a success page.
     else:
@@ -48,11 +50,18 @@ def profile(request):
     userInfo = models.CustomUser.objects.get(username=user)
     
     # followers, following 
-    return render(request, 'accounts/profile.html', {
+    return render(request, 'accounts/my_profile.html', {
         'profile': profile,
         'user': userInfo,
         'today': today
     })
+
+def profile_view(request, username):
+    user = get_object_or_404(models.CustomUser, username=username)
+    profile = get_object_or_404(models.Profile, user =user)
+
+
+    return render(request, 'accounts/profile.html', {'user': user, 'profile': profile})
 
 @login_required
 def edit_profile(request):
@@ -65,7 +74,7 @@ def edit_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            return redirect('profile')  # Redirect to a profile view or another page
+            return redirect('my_profile')  # Redirect to a profile view or another page
     else:
         user_form = CustomUserChangeForm(instance=user)
         profile_form = ProfileForm(instance=profile)
@@ -74,14 +83,17 @@ def edit_profile(request):
         'user_form': user_form,
         'profile_form': profile_form
     })
-    return
 
-def delete_account(requests):
-    return
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        # Logic to delete the account
+        request.user.delete()
+        logout(request)
+        return redirect('home')  # Redirect to home page after deletion
+    return render(request, 'accounts/delete_account.html')
 
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render, redirect
+
 
 def login_(request):
     if request.method == 'POST':
@@ -114,3 +126,8 @@ def view_following(requests):
 # maybe can be as a checkbox in edit profile
 def addInterest(requests):
     return
+
+# def explore
+#  user by user name/ first name/ last name
+#  groups
+#  
