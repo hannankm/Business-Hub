@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #0f17e7;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 10px;
+        }
+        li {
+            background: white;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            color:#0f17e7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+        form {
+            margin-top: 10px;
+        }
+        button {
+            background-color:#0f17e7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .title{
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color:#0f17e7;
+        }
+        .comments {
+            margin-top: 20px;
+        }
+        .comments h2 {
+            margin-top: 0;
+        }
+        .comments ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .comments li {
+            background: #e9e9e9;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+         .a-delete{
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .a-edit{
+            background-color: #0f17e7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .a-goback{
+            background-color: #0e130e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            justify-content: flex-end; /* Align items to the end (right) */
+        }
+       
+    </style>
+</head>
+<body>
+    <h1> Detail Page</h1>
+    <ul>
+        <li>
+            <div style="display: flex; justify-content: space-between;align-items: baseline;">
+                <span>
+
+                   <h3>{{ post.title }}</h3> 
+                
+                </span>
+
+                {% if request.user != post.posted_by %}
+                <span>
+                    <form action="{% url 'share_post' post.id %}" method="get">
+                        <button type="submit">Share</button>
+                    </form>
+                </span>
+                {% endif %}
+                
+                {% if request.user == post.posted_by %}
+                    <span>
+                        <a class="a-edit" href="{% url 'update_post' post.pk %}">Edit</a>
+                        <a class="a-delete" href="{% url 'delete_post' post.pk %}">Delete</a>
+                    </span>
+                {% endif %}
+            </div>
+           <hr> 
+           <div style="margin: 20px 0;">
+            {{ post.text_content }} 
+            {{ post.posted_by }}  <br>
+            <small>{{ post.created_at }}</small>
+           </div>
+        <form action="{% url 'like_post' post.id %}" method="post">
+            {% csrf_token %}
+            <div style="display: flex;">
+                <button type="submit">
+                    {% if request.user in post.likes.all %}
+                        Unlike
+                    {% else %}
+                        Like
+                    {% endif %}
+                </button>
+                <p>{{ post.likes.count }} like{{ post.likes.count|pluralize }}</p>
+            
+            </div>
+            
+        </form>
+
+       
+
+
+
+        
+
+        <hr>
+
+        <!-- Display comments -->
+        <div class="comments">
+            <h2>Comments</h2>
+            <ul>
+                {% for comment in comments %}
+                    <li>
+                        <p style="font-weight: bold;"> {{ comment.content }}</p>
+                       <small> <p>By {{ comment.user.username }} on {{ comment.created_at }}</p></small>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Comment form -->
+        <div class="comments">
+            <h2>Add a comment</h2>
+            <form method="post" enctype="multipart/form-data" action="">
+                {% csrf_token %}
+                <label for="id_content"></label><br>
+                <textarea id="id_content" name="content" rows="4" cols="50"></textarea><br>
+             
+                <button type="submit">comment</button>
+            </form>
+        </div>
+        </li>
+    </ul>
+    <div class="container">
+        <a href="{% url 'index' %}" class="a-goback"> < back </a>
+    </div>
+    
+</body>
+</html>

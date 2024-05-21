@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Share Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h2 {
+            color:#0f17e7;
+            margin-bottom: 20px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .post-title {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .post-content {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        button {
+            background-color:#0f17e7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color:#0f17e7;
+        }
+        a.button {
+            background-color:  #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Share Post</h2>
+        <p>Are you sure you want to share this post?</p>
+        <p class="post-title">{{ post.title }}</p>
+        <div class="post-content">
+            <p>{{ post.text_content }}</p>
+            {% if post.file_content %}
+                <p>{{ post.file_content }}</p>
+            {% endif %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Share</button>
+            <a href="{% url 'view_post_detail' post.pk %}" class="button">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

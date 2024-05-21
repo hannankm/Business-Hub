@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        form {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h3, h6 {
+            margin: 0;
+            padding: 0;
+        }
+        h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        h6 {
+            font-size: 1em;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+       
+        .link {
+            background-color:#0f17e7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+       
+    </style>
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data" action="{% url 'delete_post' post.pk %}">
+        {% csrf_token %}
+        <h3>Delete: {{ post.title }}</h3>
+        <h6>Are you sure?</h6>
+        <button type="submit" class="button">Delete</button>
+        <a href="{% url 'view_post_detail' post.pk %}" class="link">Cancel</a>
+    </form>
+</body>
+</html>

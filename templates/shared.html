@@ -1,0 +1,97 @@
+<!-- templates/shared.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shared Posts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            background-color:#0f17e7;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: white;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            color:#0f17e7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .a-goback{
+            background-color: #0e130e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .a-goback:hover{
+            background-color: #0e130e;
+            text-decoration: none;
+        }
+        .contain{
+            display: flex;
+            justify-content: flex-end; /* Align items to the end (right) */
+        }
+         
+
+    </style>
+</head>
+<body>
+    <h2>Shared Posts</h2>
+    <ul>
+        {% for share in shared_posts %}
+            <li>
+                <p style="font-weight: bold; font-size: large;">Title: <a href="{% url 'view_post_detail' share.post.pk %}">{{ share.post.title }}</a></p>
+                <p>Content: {{ share.post.text_content|slice:":200" }}...</p>
+                <p> {{ share.post.file_content|slice:":200" }}...</p>
+                <small><p>Shared at: {{ share.shared_at }}</p></small>
+                <form method="get" action="{% url 'delete_shared_post' share.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="contain">
+        <a href="{% url 'index' %}" class="a-goback">Cancel</a>
+    </div>
+</body>
+</html>

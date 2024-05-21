@@ -1,0 +1,23 @@
+<!-- templates/profile.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+</head>
+<body>
+    <h2>Profile</h2>
+    <p>First Name: {{ user.first_name }}</p>
+    <p>Last Name: {{ user.last_name }}</p>
+    <p>Email: {{ user.email }}</p>
+
+    {% if profile %}
+        <p>Profile Picture: <img src="{{ profile.profile_pic.url }}" alt="Profile Picture"></p>
+        <p>Bio: {{ profile.bio }}</p>
+        <p>Followers: {{ profile.followers.count }}</p>
+        <p>Following: {{ profile.following.count }}</p>
+    {% endif %}
+
+   
+  
+</body>
+</html>
