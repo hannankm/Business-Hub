@@ -55,6 +55,23 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        .a-goback{
+            background-color: #0e130e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            justify-content: flex-end; /* Align items to the end (right) */
+        }
     </style>
 </head>
 <body>
@@ -64,5 +81,9 @@
         <button type="submit">Edit</button>
         <a href="{% url 'delete_post' post.pk %}" class="button">Delete</a>
     </form>
+
+    <div class="container">
+        <a href="{% url 'index' %}" class="a-goback">Cancel</a>
+    </div>
 </body>
 </html>

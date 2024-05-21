@@ -36,8 +36,12 @@ class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(upload_to='profile_pics/')
     bio = models.TextField(blank=True)
-    followers = models.ManyToManyField(User, related_name='following')
-    following = models.ManyToManyField(User, related_name='followers')
 
     def __str__(self):
         return f'Profile of {self.user.username}'
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    followers = models.ManyToManyField(User, related_name='following')
+    following = models.ManyToManyField(User, related_name='followers')
+

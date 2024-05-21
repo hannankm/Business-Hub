@@ -13,7 +13,7 @@
             padding: 0;
         }
         h1 {
-            background-color: #4CAF50;
+            background-color: #0f17e7;
             color: white;
             padding: 10px 0;
             text-align: center;
@@ -31,17 +31,17 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         a {
-            color: #4CAF50;
+            color:#0f17e7;
             text-decoration: none;
         }
         a:hover {
-            text-decoration: underline;
+            text-decoration: none;
         }
         form {
             margin-top: 10px;
         }
         button {
-            background-color: #4CAF50;
+            background-color:#0f17e7;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -65,7 +65,7 @@
             border-radius: 5px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color:#0f17e7;
         }
         .comments {
             margin-top: 20px;
@@ -97,7 +97,7 @@
             border-radius: 5px;
         }
         .a-edit{
-            background-color: #4CAF50;
+            background-color: #0f17e7;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -109,16 +109,34 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        .a-goback{
+            background-color: #0e130e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            justify-content: flex-end; /* Align items to the end (right) */
+        }
+       
     </style>
 </head>
 <body>
-    <h1>Welcome to Detail Page</h1>
+    <h1> Detail Page</h1>
     <ul>
         <li>
             <div style="display: flex; justify-content: space-between;align-items: baseline;">
                 <span>
 
-                    {{ post.title }}
+                   <h3>{{ post.title }}</h3> 
                 
                 </span>
 
@@ -173,8 +191,8 @@
             <ul>
                 {% for comment in comments %}
                     <li>
-                        <p>{{ comment.content }}</p>
-                        <p>By {{ comment.user.username }} on {{ comment.created_at }}</p>
+                        <p style="font-weight: bold;"> {{ comment.content }}</p>
+                       <small> <p>By {{ comment.user.username }} on {{ comment.created_at }}</p></small>
                     </li>
                 {% endfor %}
             </ul>
@@ -188,10 +206,14 @@
                 <label for="id_content"></label><br>
                 <textarea id="id_content" name="content" rows="4" cols="50"></textarea><br>
              
-                <button type="submit">Submit</button>
+                <button type="submit">comment</button>
             </form>
         </div>
         </li>
     </ul>
+    <div class="container">
+        <a href="{% url 'index' %}" class="a-goback"> < back </a>
+    </div>
+    
 </body>
 </html>

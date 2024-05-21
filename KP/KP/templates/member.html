@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members</title>
+</head>
+<body>
+    <h1>Members</h1>
+    <ul>
+        {% for user in user_list %}
+
+            {% if user.first_name and user.id != request.user.id %}
+                <li>{{ user.first_name }} {{ user.last_name }}
+                    <span>Following: {{ user.following.count }}</span>
+                    <span>Followers: {{ user.followers.count }}</span>
+                    <form method="post" action="{% url 'follow' user_id=user.id %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% if follow_status.user.id %}
+                                Unfollow
+                            {% else %}
+                                Follow
+                            {% endif %}
+                        </button>
+                    </form>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>

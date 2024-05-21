@@ -1,12 +1,26 @@
 from django.shortcuts import render, redirect,get_object_or_404, reverse
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
+from django.views import View
+from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView,  DetailView, UpdateView, DeleteView
 
-from .models import Post,Like, Comment,Share
+from .models import Post,Like, Comment,Share,Follow
 from .forms import postform, CommentForm
+
+@login_required
+def follow(request, user_id):
+    if request.method == 'POST':
+        user_to_follow = User.objects.get(pk=user_id)
+        follow_instance, created = Follow.objects.get_or_create(user=request.user)
+        follow_instance.following.add(user_to_follow)
+        return HttpResponseRedirect(reverse('member'))  # Redirect back to the member page
+    else:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))  # Redirect back to the previous page
+        # return redirect('profile', user_id=user_id) 
 
 def register(request):
       if request.method == 'POST':
@@ -23,6 +37,14 @@ def register(request):
 
       return render(request, 'register.html')
     
+class CustomLogoutView(View):
+ def get(self, request):
+        logout(request)
+        return redirect(reverse_lazy('login'))
+ def post(self, request):
+        logout(request)
+        return redirect(reverse_lazy('login'))
+
 
 def profile(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -117,6 +139,48 @@ class homeview(ListView):
     model = Post 
     template_name = 'home.html'
     ordering = ['-created_at']
+
+class HomeView(ListView):
+    model = Post
+    template_name = 'home.html'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        current_user = self.request.user
+        following_users = Follow.objects.filter(user=current_user).values_list('following', flat=True)
+        user_posts = Post.objects.filter(posted_by=current_user)
+        following_posts = Post.objects.filter(posted_by__in=following_users)
+        queryset = user_posts | following_posts  # Combine user's posts and following users' posts
+        return queryset.order_by(*self.ordering)
+
+
+def follow(request, user_id):
+    if request.method == 'POST':
+        user_to_follow = get_object_or_404(User, pk=user_id)
+        follow_instance, created = Follow.objects.get_or_create(user=request.user)
+
+        if user_to_follow in follow_instance.following.all():
+            follow_instance.following.remove(user_to_follow)
+        else:
+            follow_instance.following.add(user_to_follow)
+
+        return HttpResponseRedirect(reverse('member'))
+    return HttpResponseRedirect(reverse('member'))
+    
+class memberview(ListView):
+    model = User
+    template_name = 'member.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_user = self.request.user
+
+        # Add follow status directly to user objects
+        for user in context['user_list']:
+            user.is_following = user.followers.filter(pk=current_user.pk).exists()
+
+        return context
+
 
 class view_post_detail(DetailView):
     model = Post

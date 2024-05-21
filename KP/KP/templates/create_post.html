@@ -29,8 +29,8 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-        button {
-            background-color: #4CAF50;
+        button,a {
+            background-color:#0f17e7;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -62,6 +62,7 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Post</button>
+        <a href="{% url 'index' %}" style="background-color: #f44336;">Cancel</a>
     </form>
 </body>
 </html>
