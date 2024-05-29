@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 
@@ -53,19 +55,13 @@ class Organization_Details(models.Model):
 
 class Follow(models.Model):
     follower = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='following')
-    followed = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='followers')
+    following = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='followers')
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('follower', 'followed')
+        unique_together = ('follower', 'following')
 
     def __str__(self):
-        return f'{self.follower} follows {self.followed}'
+        return f'{self.follower} follows {self.following}'
 
 
-# custom user
-# profile
-# org details
-
-
-# models -- views -- urls -- forms -- templates 

@@ -48,6 +48,7 @@
         }
       }
     </style>
+    {% block style %} {% endblock %}
   </head>
   <body>
     {% load humanize %}
@@ -91,12 +92,12 @@
                 >
                   <li class="w-100">
                     <a href="{% url 'my_groups' %}" class="nav-link px-0">
-                      <span class="d-none d-sm-inline">My Groups</span> 1
+                      <span class="d-none d-sm-inline">My Groups</span>
                     </a>
                   </li>
                   <li>
                     <a href="{% url 'view_groups' %}" class="nav-link px-0">
-                      <span class="d-none d-sm-inline">Explore</span> 2
+                      <span class="d-none d-sm-inline">Explore</span>
                     </a>
                   </li>
                 </ul>
@@ -112,7 +113,7 @@
                   ></a
                 >
               </li>
-              <li>
+              <!-- <li>
                 <a
                   href="{% url 'discussion_forum' %}"
                   class="nav-link px-0 align-middle"
@@ -120,15 +121,11 @@
                   <i class="fa-solid fa-comments"></i>
                   <span class="ms-1 d-none d-sm-inline">AI Chatbot </span></a
                 >
-              </li>
+              </li> -->
               <li>
-                <a
-                  href="#submenu2"
-                  data-bs-toggle="collapse"
-                  class="nav-link px-0 align-middle"
-                >
+                <a href="{% url 'search' %}" class="nav-link px-0 align-middle">
                   <i class="fa-solid fa-magnifying-glass"></i>
-                  <span class="ms-1 d-none d-sm-inline">Explore</span></a
+                  <span class="ms-1 d-none d-sm-inline">Search</span></a
                 >
                 <!-- <ul
                   class="collapse nav flex-column ms-1"
@@ -187,7 +184,10 @@
                 </ul>
               </li>
               <li>
-                <a href="{% url 'home' %}" class="nav-link px-0 align-middle">
+                <a
+                  href="{% url 'chat-page' %}"
+                  class="nav-link px-0 align-middle"
+                >
                   <i class="fa-solid fa-message"></i>
                   <span class="ms-1 d-none d-sm-inline">Messages</span>
                 </a>

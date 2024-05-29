@@ -1,6 +1,6 @@
 <!-- profile.html -->
 
-{% extends 'accounts/layout.html' %} {% block content %}
+{% extends 'accounts/layout.html' %} {% load static %} {% block content %}
 
 <!-- First Row -->
 <div class="row my-4">
@@ -26,25 +26,230 @@
       <p>{{ user.headline }}</p>
       <div class="row w-50 w-md-100">
         <div class="col">
-          <p>{{ user.post_count }} Posts</p>
+          <p class="btn btn-info">{{ user.post_count }} Posts</p>
         </div>
         <div class="col">
-          <p>{{ user.following_count }} Following</p>
+          <button
+            type="button"
+            class="btn btn-info"
+            data-toggle="modal"
+            data-target="#followingModal"
+          >
+            {{ user.following_count }} Following
+          </button>
         </div>
         <div class="col">
-          <p>{{ user.follower_count }} Followers</p>
+          <button
+            type="button"
+            class="btn btn-info"
+            data-toggle="modal"
+            data-target="#followersModal"
+          >
+            {{ user.follower_count }} Followers
+          </button>
         </div>
       </div>
-      <button class="btn btn-primary">
-        <i class="fas fa-envelope"></i> Send Message
-      </button>
-      {% if user != request.user %} {% if request.user in user.followers.all %}
-      <button class="btn btn-secondary">Following</button>
-      {% else %}
-      <button class="btn btn-primary">
-        <i class="fas fa-user-plus"></i> Follow
-      </button>
-      {% endif %} {% endif %}
+
+      <!-- Followers Modal -->
+      <div
+        class="modal fade"
+        id="followersModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="followersModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="followersModalLabel">
+                Followers of {{ user.username }}
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table w-100 mx-auto">
+                <thead>
+                  <tr>
+                    <th>Users</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for follow in followers %}
+                  <tr>
+                    <td>
+                      <div class="row">
+                        <div class="col-2">
+                          {% if follow.follower.profile_pic %}
+                          <!-- Display logo as a small rounded image -->
+                          <img
+                            src="{{ follow.follower.profile_pic }}"
+                            alt="{{ follow.follower.username }}"
+                            class="card-img-top rounded-circle"
+                            style="width: 70px; height: 70px"
+                          />
+                          {% else %}
+                          <!-- Display Font Awesome icon with rounded background -->
+                          <div
+                            class="rounded-circle text-center"
+                            style="
+                              width: 50px;
+                              height: 50px;
+                              background-color: black;
+                            "
+                          >
+                            <i
+                              class="fas fa-user-group"
+                              style="
+                                font-size: 24px;
+                                color: white;
+                                margin-top: 13px;
+                              "
+                            ></i>
+                          </div>
+                          {% endif %}
+                        </div>
+                        <div class="col-10">
+                          <h6 class="mx-1">
+                            <a
+                              href="{% url 'profile' follow.follower.username %}"
+                              >@{{ follow.follower.username }}</a
+                            >
+                          </h6>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <!-- Back button -->
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Following Modal -->
+      <div
+        class="modal fade"
+        id="followingModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="followingModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="followingModalLabel">
+                Following by {{ user.username }}
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table w-100 mx-auto">
+                <thead>
+                  <tr>
+                    <th>Users</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for follow in following %}
+                  <tr>
+                    <td>
+                      <div class="row">
+                        <div class="col-2">
+                          {% if follow.following.profile_pic %}
+                          <!-- Display logo as a small rounded image -->
+                          <img
+                            src="{{ follow.following.profile_pic }}"
+                            alt="{{ follow.following.username }}"
+                            class="card-img-top rounded-circle"
+                            style="width: 70px; height: 70px"
+                          />
+                          {% else %}
+                          <!-- Display Font Awesome icon with rounded background -->
+                          <div
+                            class="rounded-circle text-center"
+                            style="
+                              width: 50px;
+                              height: 50px;
+                              background-color: black;
+                            "
+                          >
+                            <i
+                              class="fas fa-user-group"
+                              style="
+                                font-size: 24px;
+                                color: white;
+                                margin-top: 13px;
+                              "
+                            ></i>
+                          </div>
+                          {% endif %}
+                        </div>
+                        <div class="col-10">
+                          <h6 class="mx-1">
+                            <a
+                              href="{% url 'profile' follow.following.username %}"
+                              >@{{ follow.following.username }}</a
+                            >
+                          </h6>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <!-- Back button -->
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if user != request.user %}
+      <form action="{% url 'follow_user' user.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-dark">
+          {% if is_following %} Unfollow {% else %} Follow {% endif %}
+        </button>
+      </form>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -153,7 +358,68 @@
     role="tabpanel"
     aria-labelledby="timeline-tab"
   >
-    <p>This is user's timeline.</p>
+    <!-- Display user-created posts -->
+    <div class="card">
+      <div class="card-header">User Created Posts</div>
+      <ul class="list-group list-group-flush">
+        {% for post in user_posts %}
+        <li class="list-group-item">
+          <p style="font-weight: bold; font-size: large">
+            Title:
+            <a href="{% url 'view_post_detail' post.pk %}">{{ post.title }}</a>
+          </p>
+          <p>Content: {{ post.text_content|slice:":200" }}...</p>
+          <p>{{ post.file_content|slice:":200" }}...</p>
+          <small>Created at: {{ post.created_at }}</small>
+          {% if request.user == user %}
+          <div class="btn-group" role="group" aria-label="Post Actions">
+            <a href="{% url 'update_post' post.pk %}" class="btn btn-primary"
+              >Edit</a
+            >
+            <form
+              method="post"
+              action="{% url 'delete_post' post.pk %}"
+              class="d-inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Display shared posts -->
+    <div class="card mt-3">
+      <div class="card-header">Shared Posts</div>
+      <ul class="list-group list-group-flush">
+        {% for share in shared_posts %}
+        <li class="list-group-item">
+          <p style="font-weight: bold; font-size: large">
+            Title:
+            <a href="{% url 'view_post_detail' share.post.pk %}"
+              >{{ share.post.title }}</a
+            >
+          </p>
+          <p>Content: {{ share.post.text_content|slice:":200" }}...</p>
+          <p>{{ share.post.file_content|slice:":200" }}...</p>
+          <small>Shared at: {{ share.shared_at }}</small>
+          {% if request.user == user %}
+          <form
+            method="post"
+            action="{% url 'delete_shared_post' share.pk %}"
+            class="d-inline"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Unshare</button>
+          </form>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 </div>
 {% endblock %}

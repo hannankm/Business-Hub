@@ -1,0 +1,52 @@
+<!-- templates/accounts/followers.html -->
+{% extends 'accounts/layout.html' %} {% block content %}
+<h1>Followers of {{ user.username }}</h1>
+<table class="table w-50 mx-auto">
+  <thead>
+    <tr>
+      <th>Users</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for follow in following %}
+    <tr>
+      <td>
+        <div class="row">
+          <div class="col-2">
+            {% if follow.following.profile_pic %}
+            <!-- Display logo as a small rounded image -->
+            <img
+              src="{{ member.profile_pic }}"
+              alt="{{ member.username }}"
+              class="card-img-top rounded-circle"
+              style="width: 70px; height: 70px"
+            />
+            {% else %}
+            <!-- Display Font Awesome icon with rounded background -->
+            <div
+              class="rounded-circle text-center"
+              style="width: 50px; height: 50px; background-color: black"
+            >
+              <i
+                class="fas fa-user-group"
+                style="font-size: 24px; color: white; margin-top: 13px"
+              ></i>
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-10">
+            <h6 class="mx-1">
+              <a href="{% url 'profile' follow.following.username %}"
+                >@{{ follow.following.username }}</a
+              >
+            </h6>
+          </div>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
