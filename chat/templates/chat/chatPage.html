@@ -1,0 +1,149 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block style %}
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f1f1f1;
+  }
+
+  .chat-container {
+    width: 80%;
+    max-width: 600px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+
+  .chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .chat-header h1 {
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .chat-messages {
+    height: 400px;
+    overflow-y: scroll;
+    margin-bottom: 20px;
+  }
+
+  .chat-messages .message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+  }
+
+  .chat-messages .message.mine {
+    background-color: #b4ace0;
+    color: white;
+    align-self: flex-end;
+    text-align: right;
+  }
+
+  .chat-messages .message.theirs {
+    background-color: #f1f1f1;
+    align-self: flex-start;
+    text-align: left;
+  }
+
+  .chat-input {
+    display: flex;
+    align-items: center;
+  }
+
+  .chat-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  .chat-input button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: #32af34;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .username {
+    color: rgb(243, 113, 113);
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="chat-container">
+  <div class="chat-header">
+    <h1>Welcome to the Chat Site, {{ request.user }}</h1>
+  </div>
+  <div class="chat-messages" id="id_chat_item_container"></div>
+  <div class="chat-input">
+    <input
+      type="text"
+      id="id_message_send_input"
+      placeholder="Type your message here"
+    />
+    <button type="submit" id="id_message_send_button">Send Message</button>
+  </div>
+</div>
+
+<script>
+  const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+  chatSocket.onopen = function (e) {
+    console.log("The connection was setup successfully!");
+  };
+  chatSocket.onclose = function (e) {
+    console.log("Something unexpected happened!");
+  };
+  document.querySelector("#id_message_send_input").focus();
+  document.querySelector("#id_message_send_input").onkeyup = function (e) {
+    if (e.keyCode == 13) {
+      document.querySelector("#id_message_send_button").click();
+    }
+  };
+  document.querySelector("#id_message_send_button").onclick = function (e) {
+    var messageInput = document.querySelector("#id_message_send_input").value;
+    chatSocket.send(
+      JSON.stringify({
+        message: messageInput,
+        username: "{{ request.user.username }}",
+      })
+    );
+  };
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    var div = document.createElement("div");
+    div.classList.add("message");
+    if (data.username === "{{ request.user.username }}") {
+      div.classList.add("mine");
+    } else {
+      div.classList.add("theirs");
+    }
+
+    div.innerHTML = `<span class="username">${data.username}</span> ${data.message}`;
+    document.querySelector("#id_message_send_input").value = "";
+    document.querySelector("#id_chat_item_container").appendChild(div);
+    document.querySelector("#id_chat_item_container").scrollTop =
+      document.querySelector("#id_chat_item_container").scrollHeight;
+  };
+</script>
+{% endblock %}
