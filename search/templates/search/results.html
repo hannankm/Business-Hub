@@ -1,0 +1,41 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block content %}
+<h4>Enter your search query:</h4>
+<form method="get" action="{% url 'search' %}">
+  <input
+    class="form-control w-50 mx-4 my-2"
+    type="text"
+    name="q"
+    value="{{ query }}"
+  />
+  <button class="btn btn-info mx-4 text-light" type="submit">Search</button>
+</form>
+{% if query %}
+<div class="w-75">
+  <h1>Search Results for "{{ query }}"</h1>
+  {% if results %}
+  <ul>
+    {% for result in results %}
+    <li class="border p-2 m-2">
+      <a
+        href="https://en.wikipedia.org/wiki/{{ result.title|urlencode }}"
+        target="_blank"
+        >{{ result.title }}</a
+      >
+      <p>{{ result.snippet|safe }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-danger">No results for your search query, try again.</p>
+  {% endif %}
+</div>
+{% else %}
+<div class="w-50 mx-auto border p-4 m-4 border-info border-3">
+  <h3 class="text-decoration-underline">Note</h3>
+  <p>
+    Search through various sources across the internet such as Wikipedia and
+    other knowledge bases by entering your search query and reviewing what has
+    been retreived.
+  </p>
+</div>
+{% endif %} {% endblock %}
