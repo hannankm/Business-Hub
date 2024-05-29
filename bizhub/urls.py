@@ -27,7 +27,12 @@ urlpatterns = [
     path("discussion_forum/", include("discussion.urls")),
     path("resources/", include("resources.urls")),
     path('groups/', include('groups.urls')),
+    path('search/', include('search.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('posts/', include("posts.urls")),
+    path('chat/', include("chat.urls")),
+
+    
 
 
 

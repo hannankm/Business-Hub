@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import environ
+
 
 
 
@@ -22,7 +24,11 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env()
 
+# Read the Wikipedia API URL
+WIKIPEDIA_API_URL = env('WIKIPEDIA_API_URL')
 AUTH_USER_MODEL = "accounts.CustomUser"
 CKEDITOR_UPLOAD_PATH = 'uploads/articles/'
 CKEDITOR_CONFIGS = {
@@ -71,10 +77,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne' , 
     'accounts.apps.AccountsConfig',
     'discussion.apps.DiscussionConfig',
     'resources.apps.ResourcesConfig',
     'groups.apps.GroupsConfig',
+    'posts.apps.PostsConfig',
+    'search.apps.SearchConfig',
+    'chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,8 +95,17 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'django_select2',
+    'channels' , 
+
+
 
 ]
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -178,3 +197,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ASGI_APPLICATION = 'bizhub.asgi.application'
