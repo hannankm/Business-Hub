@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
-from .models import Question, Response
+from .models import Question, Response, Vote
 from .forms import QuestionForm, ResponseForm
 # Create your views here.
 
@@ -12,20 +12,26 @@ def discussion_forum(request):
 
     # Filtering by tag
     tag = request.GET.get('tag')
-    # if tag:
-    #     questions = questions.filter(tags__name=tag)
+    if tag:
+        questions = questions.filter(tags__name=tag)
 
     # Sorting
     sort = request.GET.get('sort', 'date_posted')
-    if sort == 'views':
+    if sort == 'views_count':
         questions = questions.order_by('-views_count')
-    elif sort == 'replies':
+    elif sort == '-views_count':
+        questions = questions.order_by('views_count')
+    elif sort == 'replies_count':
         questions = questions.order_by('-replies_count')
-    else:
+    elif sort == '-replies_count':
+        questions = questions.order_by('replies_count')
+    elif sort == 'date_posted':
         questions = questions.order_by('-date_posted')
+    elif sort == '-date_posted':
+        questions = questions.order_by('date_posted')
 
     # Search functionality
-    query = request.GET.get('q')
+    query = request.GET.get('search')
     if query:
         questions = questions.filter(Q(title__icontains=query) | Q(content__icontains=query))
 
@@ -67,33 +73,44 @@ def create_response(request, question_id):
             question.replies_count += 1
             question.save()
             return redirect('question_detail', question_id=question.id)
-    return render(request, 'discussion/create_response.html', {'form': form, 'question': question})
+    else:
+        form = ResponseForm()
+    return render(request, 'discussion/question.html', {'form': form, 'question': question})
 
-def update_question(request):
-    return
 
-def delete_question(request):
-    return
-
-def update_response(request):
-    return 
-
-def delete_response(request):
-    return 
 
 
 def question_detail(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
-    responses = question.response_set.all().order_by('-date')
+    question = get_object_or_404(Question, pk=question_id)
 
-    # Paginate responses
-    paginator = Paginator(responses, 5)  # Display 5 responses per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    if request.method == 'GET':
+        question.views_count += 1
+        question.save()
 
-    form = ResponseForm()
+    if request.method == 'POST':
+        response_id = request.POST.get('response_id')
+        vote_type = request.POST.get('vote_type')
+        if response_id and vote_type in ['upvote', 'downvote']:
+            response = get_object_or_404(Response, pk=response_id)
+            user = request.user
 
-    return render(request, 'discussion/question.html', {'question': question, 'page_obj': page_obj, 'response_form':form })
+            # Check if the user has already voted on this response
+            existing_vote = Vote.objects.filter(user=user, response=response).exists()
+            if not existing_vote:
+                if vote_type == 'upvote':
+                    response.upvotes += 1
+                else:
+                    response.downvotes += 1
+                response.save()
+                Vote.objects.create(user=user, response=response, type=vote_type == 'upvote')
 
-def search_question(request):
-    return 
+    sort_by = request.GET.get('sort_by', 'upvotes')
+    if sort_by == 'downvotes':
+        responses = question.response_set.all().order_by('-downvotes')
+    else:
+        responses = question.response_set.all().order_by('-upvotes')
+
+    return render(request, 'discussion/question.html', {
+        'question': question,
+        'responses': responses,
+    })

@@ -1,57 +1,32 @@
-<!-- 
-
-
-
-    view list of questions in table form 
-
-    Q ---- Responses --- Views 
-    view detail
- -->
-<!-- make it a form and by default do recent and all topics -->
-{% extends 'accounts/layout.html' %} {% load static %} {% block title %} Home -
-My Site {%endblock%} {% block content %}
+{% extends 'accounts/layout.html' %} 
+{% load static %} 
+{% block title %} Home - My Site {% endblock %} 
+{% block content %}
 <h1>Discussion Forum</h1>
-<p>This is a section where you can participate in discusiion</p>
-<h4>Do you find any interesting questions ? share your ideas</h4>
+<p>This is a section where you can participate in discussions</p>
+<h4>Do you find any interesting questions? Share your ideas</h4>
 <h5>or add your own</h5>
 <button><a href="{% url 'create_question' %}">Create Question</a></button>
 
-<!-- predefined topics  -->
-<!-- add tags as you add Q then search/ filter by tag -->
-<form id="forum-filter-form" class="row">
-  <!-- Filter Section -->
-  <!-- <div class="mb-3 col">
-    <label for="filter">Filter by Tag:</label>
-    <select id="filter" name="filter" class="form-control">
-      <option value="">All Tags</option>
-      {% for tag in tags %}
-      <option value="{{ tag.id }}">{{ tag.name }}</option>
-      {% endfor %}
-    </select>
-  </div> -->
-  <!-- Sort Section -->
+<!-- Predefined topics -->
+<!-- Add tags as you add Q then search/filter by tag -->
+<form id="forum-filter-form" class="row" method="get" action="{% url 'discussion_forum' %}">
   <div class="mb-3 col">
     <label for="sort">Sort by:</label>
     <select id="sort" name="sort" class="form-control">
-      <option value="date_posted">Date Posted (Newest First)</option>
-      <option value="-date_posted">Date Posted (Oldest First)</option>
-      <option value="views_count">Views (Highest First)</option>
-      <option value="-views_count">Views (Lowest First)</option>
-      <option value="replies_count">Replies (Highest First)</option>
-      <option value="-replies_count">Replies (Lowest First)</option>
+      <option value="date_posted" {% if sort == 'date_posted' %}selected{% endif %}>Date Posted (Newest First)</option>
+      <option value="-date_posted" {% if sort == '-date_posted' %}selected{% endif %}>Date Posted (Oldest First)</option>
+      <option value="views_count" {% if sort == 'views_count' %}selected{% endif %}>Views (Highest First)</option>
+      <option value="-views_count" {% if sort == '-views_count' %}selected{% endif %}>Views (Lowest First)</option>
+      <option value="replies_count" {% if sort == 'replies_count' %}selected{% endif %}>Replies (Highest First)</option>
+      <option value="-replies_count" {% if sort == '-replies_count' %}selected{% endif %}>Replies (Lowest First)</option>
     </select>
   </div>
 
   <!-- Search Section -->
   <div class="mb-3 col">
     <label for="search">Search:</label>
-    <input
-      type="text"
-      id="search"
-      name="search"
-      class="form-control"
-      placeholder="Search..."
-    />
+    <input type="text" id="search" name="search" class="form-control" placeholder="Search..." value="{{ query|default_if_none:'' }}">
   </div>
 
   <!-- Submit Button -->
@@ -72,21 +47,21 @@ My Site {%endblock%} {% block content %}
     <tr>
       <td>
         <div class="media">
-          <img
-            src="{{ question.user.profile.picture.url }}"
-            class="mr-3 rounded-circle"
-            alt="profile pic"
-            style="width: 50px; height: 50px"
-          />
+          {% if question.user.profile.picture.url %}
+          <img src="{{ question.user.profile.picture.url }}" class="mr-3 rounded-circle" alt="profile pic" style="width: 50px; height: 50px" />
+          {% else %}
+          <!-- Display Font Awesome icon with rounded background -->
+          <div class="rounded-circle text-center" style="width: 50px; height: 50px; background-color: black">
+            <i class="fas fa-user" style="font-size: 24px; color: white; margin-top: 13px"></i>
+          </div>
+          {% endif %}
+
           <div class="media-body">
             <h5 class="mt-0">
-              <a href="{% url 'question_detail' question.id %}"
-                >{{ question.title|truncatechars:50 }}</a
-              >
+              <a href="{% url 'question_detail' question.id %}">{{ question.title|truncatechars:50 }}</a>
             </h5>
             <p class="mb-1">
-              {{ question.user.username }} | {{ question.date_posted|naturaltime
-              }}
+              {{ question.user.username }} | {{ question.date_posted }}
             </p>
           </div>
         </div>
@@ -94,84 +69,19 @@ My Site {%endblock%} {% block content %}
       <td>{{ question.views_count }}</td>
       <td>{{ question.replies_count }}</td>
       <td>
-        <a
-          href="{% url 'question_detail' question.id %}"
-          class="btn btn-primary btn-sm"
-          >View</a
-        >
+        <a href="{% url 'question_detail' question.id %}" class="btn btn-primary btn-sm">View</a>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
-<div class="pagination">
-  <nav>
-    <ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a
-          class="page-link"
-          href="?page=1&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}{% if q %}&q={{ q }}{% endif %}"
-          >First</a
-        >
-      </li>
-      <li class="page-item">
-        <a
-          class="page-link"
-          href="?page={{ page_obj.previous_page_number }}&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}{% if q %}&q={{ q }}{% endif %}"
-          >Previous</a
-        >
-      </li>
-      {% endif %}
-
-      <li class="page-item disabled">
-        <span class="page-link"
-          >Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages
-          }}</span
-        >
-      </li>
-
-      {% if page_obj.has_next %}
-      <li class="page-item">
-        <a
-          class="page-link"
-          href="?page={{ page_obj.next_page_number }}&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}{% if q %}&q={{ q }}{% endif %}"
-          >Next</a
-        >
-      </li>
-      <li class="page-item">
-        <a
-          class="page-link"
-          href="?page={{ page_obj.paginator.num_pages }}&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}{% if q %}&q={{ q }}{% endif %}"
-          >Last</a
-        >
-      </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div>
-<!-- limit by 5 and sort by recent and sort by most relpies then views -->
-<button>View More</button>
-{% for question in page_obj %}
-<h2>
-  <a href="{% url 'question_detail' question.id %}">{{ question.title }}</a>
-</h2>
-<p>{{ question.content|truncatewords:30 }}</p>
-<p>Views: {{ question.views_count }} | Replies: {{ question.replies_count }}</p>
-{% endfor %}
-
+<!-- Add pagination controls if needed -->
 <div class="pagination">
   <span class="step-links">
     {% if page_obj.has_previous %}
-    <a
-      href="?page=1&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}"
-      >First</a
-    >
-    <a
-      href="?page={{ page_obj.previous_page_number }}&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}"
-      >Previous</a
-    >
+      <a href="?{% if query %}search={{ query }}&{% endif %}{% if tag %}tag={{ tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page=1">&laquo; first</a>
+      <a href="?{% if query %}search={{ query }}&{% endif %}{% if tag %}tag={{ tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.previous_page_number }}">previous</a>
     {% endif %}
 
     <span class="current">
@@ -179,42 +89,10 @@ My Site {%endblock%} {% block content %}
     </span>
 
     {% if page_obj.has_next %}
-    <a
-      href="?page={{ page_obj.next_page_number }}&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}"
-      >Next</a
-    >
-    <a
-      href="?page={{ page_obj.paginator.num_pages }}&limit={{ page_obj.paginator.per_page }}{% if tag %}&tag={{ tag }}{% endif %}&sort={{ sort }}"
-      >Last</a
-    >
+      <a href="?{% if query %}search={{ query }}&{% endif %}{% if tag %}tag={{ tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.next_page_number }}">next</a>
+      <a href="?{% if query %}search={{ query }}&{% endif %}{% if tag %}tag={{ tag }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
     {% endif %}
   </span>
 </div>
-<script>
-  $(document).ready(function () {
-    // Function to handle form submission
-    $("#forum-filter-form").submit(function (event) {
-      // Prevent the default form submission behavior
-      event.preventDefault();
 
-      // Get the form data
-      var formData = $(this).serialize();
-
-      // Send an AJAX request to fetch updated forum content
-      $.ajax({
-        url: '{% url "discussion_forum" %}', // Update with your URL endpoint
-        type: "GET",
-        data: formData,
-        success: function (data) {
-          // Replace the current forum content with the updated content
-          $("#forum-content").html(data);
-        },
-        error: function (xhr, status, error) {
-          // Handle errors if any
-          console.error(xhr.responseText);
-        },
-      });
-    });
-  });
-</script>
 {% endblock %}

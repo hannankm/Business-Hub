@@ -29,8 +29,8 @@ class Response(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="responses")
     content = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
-    votes = models.ManyToManyField(CustomUser, through='Vote')
-
+    upvotes = models.PositiveIntegerField(default=0)
+    downvotes = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.content
 
