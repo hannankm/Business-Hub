@@ -1,0 +1,16 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block content %}
+
+<form
+  method="post"
+  enctype="multipart/form-data"
+  action="{% url 'update_post' post.pk %}"
+>
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Edit</button>
+  <a href="{% url 'delete_post' post.pk %}" class="button">Delete</a>
+</form>
+
+<div class="container">
+  <a href="{% url 'home' %}" class="a-goback">Cancel</a>
+</div>
+{% endblock %}

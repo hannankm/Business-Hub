@@ -3,57 +3,35 @@ from django.contrib.auth import get_user_model
 
 CustomUser = get_user_model()
 
-class Photo(models.Model):
-    image = models.ImageField(upload_to='social/post/photos/')
-
-
-class Video(models.Model):
-    video_file = models.FileField(upload_to='social/post/videos/')
-
-
 class Post(models.Model):
-    title = models.CharField(max_length=100)
-    slug = models.SlugField()
-    text = models.TextField()
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='posts')
-    video = models.ManyToManyField(Video, on_delete=models.CASCADE, null=True, blank=True)
-    photos = models.ManyToManyField(Photo, related_name='posts', blank=True)
-    likes = models.ManyToManyField(CustomUser, related_name='liked_posts', blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def total_likes(self):
-        return self.likes.count()
-
+    title = models.CharField(max_length=255)
+    posted_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="posts")
+    text_content = models.TextField(null=True, blank=True)
+    file_content = models.FileField(upload_to='content_files', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(CustomUser, through='PostLike', related_name='liked_posts')
+    status = models.CharField(max_length=20, default='pending')
     def __str__(self):
-        return self.title
+        return f"{self.title} | {self.posted_by.username}"
 
+    def is_text(self):
+        return self.text_content is not None
 
-class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='commenter')
-    text = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    def is_file(self):
+        return self.file_content is not None
 
-    class Meta:
-        ordering = ['-created']
+class PostLike(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f'Comment by {self.user.username} on {self.post.title}'
+class PostShare(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    shared_at = models.DateTimeField(auto_now_add=True)
 
+class PostComment(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    content = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-class Message(models.Model):
-    sender = models.ForeignKey(CustomUser, related_name='sent_messages', on_delete=models.CASCADE)
-    recipient = models.ForeignKey(CustomUser, related_name='received_messages', on_delete=models.CASCADE)
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-
-class Share(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='shares')
-    shared_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='shared_posts')
-    shared_on = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.shared_by} shared {self.post}'

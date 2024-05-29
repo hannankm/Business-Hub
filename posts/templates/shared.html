@@ -1,0 +1,26 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block content %}
+
+<h2>Shared Posts</h2>
+<ul>
+  {% for share in shared_posts %}
+  <li>
+    <p style="font-weight: bold; font-size: large">
+      Title:
+      <a href="{% url 'view_post_detail' share.post.pk %}"
+        >{{ share.post.title }}</a
+      >
+    </p>
+    <p>Content: {{ share.post.text_content|slice:":200" }}...</p>
+    <p>{{ share.post.file_content|slice:":200" }}...</p>
+    <small><p>Shared at: {{ share.shared_at }}</p></small>
+    <form method="get" action="{% url 'delete_shared_post' share.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="button">Delete</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<div class="contain">
+  <a href="{% url 'home' %}" class="a-goback">Cancel</a>
+</div>
+{% endblock %}

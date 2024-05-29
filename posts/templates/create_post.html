@@ -1,0 +1,14 @@
+{% extends 'accounts/layout.html' %} {% load static %} {% block content %}
+<div class="w-75 mx-4">
+  <h3>Create Post</h3>
+  <form
+    method="post"
+    enctype="multipart/form-data"
+    action="{% url 'create_post' %}"
+  >
+    {% csrf_token %} {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Post</button>
+    <a href="{% url 'home' %}" class="btn btn-danger">Cancel</a>
+  </form>
+</div>
+{% endblock %}
