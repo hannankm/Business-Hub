@@ -2,24 +2,8 @@
 <h1>{{ article.title }}</h1>
 <p>{{ article.content }}</p>
 
-<p>Authors:</p>
-<ul>
-  {% for author in article.authors.all %}
-  <li>
-    <a href="{% url 'profile' author.username %}">@ {{ author.username }}</a>
-  </li>
-  {% endfor %}
-</ul>
-
-{% if user == article.owner or (article.status == 'pending' and user in
-article.authors.all) %}
+{% if user == article.owner %}
 <a href="{% url 'update_article' article.slug %}">Edit</a>
-{% endif %} {% if user == article.owner %}
-<p>Status: {{ article.get_status_display }}</p>
 <a href="{% url 'delete_article' article.slug %}">Delete</a>
-{% if article.status == 'pending' %}
-<a href="{% url 'publish_article' article.slug %}">Publish</a>
-{% endif %} {% endif %} {% if article.status == 'pending' and user in
-article.authors.all %}
-<p>{{ article.invitation_note }}</p>
-{% endif %} {% endblock %}
+
+{% endif %}{% endblock %}

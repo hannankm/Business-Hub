@@ -76,16 +76,24 @@ class GroupArticle(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_articles')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='articles')
-    authors = models.ManyToManyField(User, related_name='coauthored_articles')
+    authors = models.ManyToManyField(User, null=True, blank=True, related_name='coauthored_articles')
     title = models.CharField(max_length=255)
     content = RichTextUploadingField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     status = models.CharField(max_length=20, choices=ARTICLE_STATUS_CHOICES, default='draft')
+    # pending, approved, rejected
+    post_status = models.CharField(max_length=20, default="pending")
     invitation_note = models.TextField(blank=True, null=True)
+    description = models.TextField(blank = True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
+    
 
+    def update_status(self):
+        if self.votes.filter(vote=True).count() >= 2:
+            self.post_status = 'approved'
+            self.save()
 
     def __str__(self):
         return self.title
@@ -95,6 +103,12 @@ class GroupArticle(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
     
+    
+class GroupArticleVote(models.Model):
+    article = models.ForeignKey(GroupArticle, on_delete=models.CASCADE, related_name='votes')
+    voter = models.ForeignKey(User, on_delete=models.CASCADE)
+    vote = models.BooleanField()
+
 # class Notification(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
 #     message = models.TextField()

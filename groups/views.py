@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from .models import Group, Announcement, GroupArticle, Event
+from .models import Group, Announcement, GroupArticle, Event, GroupArticleVote
 from .forms import GroupForm, AnnouncementForm, EventForm, GroupArticleForm, GroupArticleUpdateForm
 from django.utils.safestring import mark_safe
 
@@ -86,10 +86,17 @@ def group_detail(request, slug):
     members = group.members.all()
     authored_articles = request.user.coauthored_articles.all()
     owned_articles = request.user.owned_articles.all()
-    articles = GroupArticle.objects.filter(status='published')
+    articles = GroupArticle.objects.filter(group=group, post_status="approved")
+    pending_articles = GroupArticle.objects.filter(group=group, post_status="pending")
+
+    for article in pending_articles:
+        article.approve_count = article.votes.filter(vote=True).count()
+        article.reject_count = article.votes.filter(vote=False).count()
+        article.user_voted = article.votes.filter(voter=request.user).exists()
+        article.user_vote = article.votes.filter(voter=request.user).first().vote if article.user_voted else None
 
 
-    return render(request, 'groups/group_detail.html', {'group': group, 'is_member': is_member, 'announcements': announcements, 'events': events, 'members': members, 'authored_articles': authored_articles, 'owned_articles': owned_articles, 'articles': articles})
+    return render(request, 'groups/group_detail.html', {'group': group, 'is_member': is_member, 'announcements': announcements, 'events': events, 'members': members, 'authored_articles': authored_articles, 'owned_articles': owned_articles, 'articles': articles, 'pending_articles': pending_articles})
 
 @login_required
 def join_group(request, slug):
@@ -115,6 +122,22 @@ def create_announcement(request, group_slug):
         form = AnnouncementForm()
     
     return render(request, 'announcements/announcement_form.html', {'form': form, 'group': group})
+@login_required
+def vote_article(request, article_slug):
+    article = get_object_or_404(GroupArticle, slug=article_slug)
+    group = article.group
+
+    if request.user not in group.members.all():
+        return redirect('group_detail', group.slug)
+
+    if request.method == 'POST':
+        vote_value = request.POST.get('vote')
+        vote = vote_value == 'yes'
+        GroupArticleVote.objects.create(article=article, voter=request.user, vote=vote)
+        article.update_status()
+        return redirect('group_detail', group.slug)
+
+    return render(request, 'groups/vote_article.html', {'article': article, 'group': group})
 
 @login_required
 def update_announcement(request, group_slug, pk):

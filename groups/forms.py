@@ -39,7 +39,7 @@ class EventForm(forms.ModelForm):
 class GroupArticleForm(forms.ModelForm):
     class Meta:
         model = GroupArticle
-        fields = ['title', 'content',  'type', 'invitation_note', 'authors']
+        fields = ['title', 'description', 'content',  'type', 'invitation_note', 'authors']
         widgets = {
             'authors': forms.CheckboxSelectMultiple(),
             'type': forms.Select(choices=GroupArticle.TYPE_CHOICES)  # Use the choices from the model

@@ -31,5 +31,7 @@ urlpatterns = [
     path('articles/<slug:article_slug>/delete/', views.delete_article, name='delete_group_article'),
     path('articles/owned/', views.view_owned_articles, name='view_owned_articles'),
     path('articles/coauthored/', views.view_coauthored_articles, name='view_coauthored_articles'),
+    path('article/vote/<slug:article_slug>/', views.vote_article, name='vote_article'),
+
 ]
 
